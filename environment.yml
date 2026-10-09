@@ -1,0 +1,23 @@
+name: renomate
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.12
+  - pip
+  - pip:
+      # 运行时依赖（与 pyproject.toml 的 [project.dependencies] 一致）
+      - "textual>=0.47"
+      - "rich>=13.0"
+      # 可选：音频标签与网络补全
+      - "mutagen>=1.47"
+      - "musicbrainzngs>=0.7"
+      # 开发：测试 / 静态检查 / 打包
+      - "pytest>=8.0"
+      - "pytest-cov>=4.1"
+      - "pytest-asyncio>=0.23"
+      - "ruff>=0.5"
+      - "mypy>=1.8"
+      - "hatchling"
+      # 本项目自身（可编辑安装）
+      - "--editable .[dev,audio]"

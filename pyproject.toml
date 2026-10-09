@@ -1,0 +1,113 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "renomate"
+version = "0.1.0"
+description = "Safe, preview-first batch file renamer with one-click undo (TUI + CLI)"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "tochikoma777", email = "brother.777.lei@gmail.com" }]
+keywords = ["rename", "batch", "music", "tui", "undo", "musicbrainz"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Multimedia :: Sound/Audio",
+    "Topic :: Utilities",
+]
+dependencies = [
+    "textual>=0.47",
+    "rich>=13.0",
+]
+
+[project.optional-dependencies]
+audio = [
+    "mutagen>=1.47",
+    "musicbrainzngs>=0.7",
+]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=4.1",
+    "pytest-asyncio>=0.23",
+    "ruff>=0.5",
+    "mypy>=1.8",
+    "mutagen>=1.47",
+    "musicbrainzngs>=0.7",
+]
+
+[project.urls]
+Homepage = "https://github.com/tochikoma777/renomate"
+Repository = "https://github.com/tochikoma777/renomate"
+Issues = "https://github.com/tochikoma777/renomate/issues"
+
+[project.scripts]
+renomate = "renomate.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/renomate"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/renomate", "tests", "README.md", "LICENSE", "CHANGELOG.md"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+asyncio_mode = "auto"
+filterwarnings = [
+    "ignore::DeprecationWarning",
+]
+
+[tool.coverage.run]
+source = ["renomate"]
+branch = true
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "if TYPE_CHECKING:",
+    "raise NotImplementedError",
+    "\\.\\.\\.",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+ignore = ["E501"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["renomate"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["E402"]
+# SPEC 9.2 要求 sanitize_component 原样落地（含单行多语句），故放宽 E701/E702
+"src/renomate/safety.py" = ["E701", "E702"]
+
+[tool.mypy]
+python_version = "3.11"
+mypy_path = "src"
+packages = ["renomate"]
+strict = true
+warn_unreachable = true
+disallow_untyped_defs = true
+disallow_any_generics = false
+
+[[tool.mypy.overrides]]
+module = [
+    "mutagen.*",
+    "musicbrainzngs.*",
+    "textual.*",
+    "pytest_asyncio.*",
+]
+ignore_missing_imports = true
