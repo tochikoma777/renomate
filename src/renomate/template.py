@@ -24,8 +24,8 @@ _FEAT_RE = re.compile(
     r"|\s*\b(?:feat\.?|ft\.?)\s+[^-–—(（)）]+",
     re.IGNORECASE,
 )
-# 字面量里的「分隔符」定义为：空白 + 各类连字符。其余字符视为正文。
-_SEP_SPLIT_RE = re.compile(r"([\s\-–—]+)")
+# 字面量里的「分隔符」定义为：空白 + 各类连字符 + 点 + 下划线。其余字符视为正文。
+_SEP_SPLIT_RE = re.compile(r"([\s\-–—._]+)")
 
 
 class TemplateError(ValueError):

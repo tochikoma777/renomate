@@ -63,6 +63,33 @@ class PlanResult:
     stats: FillStats = field(default_factory=FillStats)
     issues: list[PlanIssue] = field(default_factory=list)
     rendered_missing: dict[str, list[str]] = field(default_factory=dict)
+    rendered: dict[str, RenderResult] = field(default_factory=dict)
+
+    def notes(self) -> dict[str, str]:
+        """把「被工具静默改动」的地方显式列出来（SPEC 21.3）。
+
+        键是 `str(src)`，值是人话说明：字符替换 / 截断 / 自动加后缀。
+        """
+        result: dict[str, str] = {}
+        for item in self.plan.items:
+            key = str(item.src)
+            rendered = self.rendered.get(key)
+            parts: list[str] = []
+            if rendered is not None:
+                if rendered.replaced:
+                    pairs = ", ".join(f"{k}→{v}" for k, v in sorted(rendered.replaced.items()))
+                    parts.append(f"字符替换: {pairs}")
+                if rendered.truncated:
+                    parts.append("超长已截断")
+            if item.conflict_resolved_by.startswith("auto-suffix"):
+                parts.append(
+                    f"重名自动加后缀 {item.conflict_resolved_by[len('auto-suffix') :].strip()}"
+                )
+            elif item.conflict_resolved_by == "case-only-rename":
+                parts.append("仅大小写改名（两步 rename）")
+            if parts:
+                result[key] = "；".join(parts)
+        return result
 
     @property
     def actionable(self) -> list[RenameItem]:
@@ -134,6 +161,7 @@ def build_plan(
         stats=stats,
         issues=planner.issues,
         rendered_missing=planner.rendered_missing,
+        rendered=planner.rendered,
     )
 
 
@@ -200,6 +228,7 @@ class _Planner:
         self.items: list[RenameItem] = []
         self.issues: list[PlanIssue] = []
         self.rendered_missing: dict[str, list[str]] = {}
+        self.rendered: dict[str, RenderResult] = {}
         self._claimed: dict[str, RenameItem] = {}
         self._case_sensitive: dict[Path, bool] = {}
 
@@ -223,6 +252,7 @@ class _Planner:
             raise
 
         self.rendered_missing[str(candidate.path)] = sorted(set(rendered.missing))
+        self.rendered[str(candidate.path)] = rendered
 
         if not filename.strip():
             self._block(candidate, bundle, candidate.path, "empty_name", "渲染结果为空")

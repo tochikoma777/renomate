@@ -115,7 +115,7 @@ class RenomateApp(App[None]):
         if self._result is None:
             return
         plan = self._result.plan
-        rows = build_rows(plan)
+        rows = build_rows(plan, sort_by=self.cfg.ui.sort_by, notes=self._result.notes())
         lines = ["  ".join(HEADERS)]
         lines.extend("  ".join(self._decorate(row, item)) for row, item in zip(rows, plan.items))
         self.query_one("#table", PlanTable).update("\n".join(lines))

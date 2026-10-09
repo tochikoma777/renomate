@@ -86,12 +86,21 @@ class ReportRow:
     dst: str
     reason: str
     resolved_by: str = ""
+    notes: str = ""
 
     def as_tuple(self) -> tuple[str, ...]:
-        return (self.icon, self.checked, self.src, self.dst, self.reason, self.resolved_by)
+        return (
+            self.icon,
+            self.checked,
+            self.src,
+            self.dst,
+            self.reason,
+            self.resolved_by,
+            self.notes,
+        )
 
 
-HEADERS = ("状态", "选", "原文件名", "新文件名", "说明", "冲突消解")
+HEADERS = ("状态", "选", "原文件名", "新文件名", "说明", "冲突消解", "改动")
 
 
 def build_rows(
@@ -99,9 +108,18 @@ def build_rows(
     *,
     ascii_only: bool = False,
     max_display: int | None = None,
+    sort_by: str = "dst",
+    notes: dict[str, str] | None = None,
 ) -> list[ReportRow]:
-    """把 Plan 转成表格行（按 src 路径排序，保证顺序稳定）。"""
-    items = sorted(plan.items, key=lambda i: str(i.src))
+    """把 Plan 转成表格行。
+
+    Args:
+        sort_by: `dst`（默认，方便一眼看出是否整齐）或 `src`。
+        notes: `str(src) → 说明`，用于显式列出被工具改动的地方
+            （字符替换 / 截断 / 自动加 `(2)`）。
+    """
+    key = (lambda i: str(i.dst).casefold()) if sort_by == "dst" else (lambda i: str(i.src))
+    items = sorted(plan.items, key=key)
     if max_display is not None:
         items = items[:max_display]
     rows: list[ReportRow] = []
@@ -114,44 +132,69 @@ def build_rows(
                 dst=short_path(item.dst, plan.root),
                 reason=item.reason,
                 resolved_by=item.conflict_resolved_by,
+                notes=(notes or {}).get(str(item.src), ""),
             )
         )
     return rows
 
 
-def render_rich(plan: Plan, *, ascii_only: bool = False) -> object:
+def render_rich(
+    plan: Plan,
+    *,
+    ascii_only: bool = False,
+    sort_by: str = "dst",
+    notes: dict[str, str] | None = None,
+) -> object:
     """返回 Rich `Table` 对象（调用方负责放进 Console / Static）。"""
     from rich.table import Table
 
     table = Table(title=f"renomate plan · {plan.session_id}", expand=True)
     for header in HEADERS:
         table.add_column(header, overflow="fold")
-    for row in build_rows(plan, ascii_only=ascii_only):
+    for row in build_rows(plan, ascii_only=ascii_only, sort_by=sort_by, notes=notes):
         table.add_row(*row.as_tuple())
     return table
 
 
-def to_csv(plan: Plan, *, ascii_only: bool = False) -> str:
+def to_csv(
+    plan: Plan,
+    *,
+    ascii_only: bool = False,
+    sort_by: str = "dst",
+    notes: dict[str, str] | None = None,
+) -> str:
     """导出 CSV 字符串（含 BOM 无关，调用方负责编码）。"""
     buffer = io.StringIO()
     writer = csv.writer(buffer)
     writer.writerow(HEADERS)
-    for row in build_rows(plan, ascii_only=ascii_only):
+    for row in build_rows(plan, ascii_only=ascii_only, sort_by=sort_by, notes=notes):
         writer.writerow(row.as_tuple())
     return buffer.getvalue()
 
 
-def to_markdown(plan: Plan, *, ascii_only: bool = False) -> str:
+def to_markdown(
+    plan: Plan,
+    *,
+    ascii_only: bool = False,
+    sort_by: str = "dst",
+    notes: dict[str, str] | None = None,
+) -> str:
     """导出 Markdown 表格。"""
     lines = ["| " + " | ".join(HEADERS) + " |", "|" + "|".join(["---"] * len(HEADERS)) + "|"]
-    for row in build_rows(plan, ascii_only=ascii_only):
+    for row in build_rows(plan, ascii_only=ascii_only, sort_by=sort_by, notes=notes):
         lines.append("| " + " | ".join(row.as_tuple()) + " |")
     return "\n".join(lines) + "\n"
 
 
-def to_text(plan: Plan, *, ascii_only: bool = False) -> str:
+def to_text(
+    plan: Plan,
+    *,
+    ascii_only: bool = False,
+    sort_by: str = "dst",
+    notes: dict[str, str] | None = None,
+) -> str:
     """纯文本表格（无 Rich 依赖时的降级渲染）。"""
-    rows = build_rows(plan, ascii_only=ascii_only)
+    rows = build_rows(plan, ascii_only=ascii_only, sort_by=sort_by, notes=notes)
     lines = ["  ".join(HEADERS)]
     lines.extend("  ".join(row.as_tuple()) for row in rows)
     return "\n".join(lines) + "\n"
@@ -173,7 +216,15 @@ def summary_lines(plan: Plan, *, ascii_only: bool = False) -> list[str]:
     ]
 
 
-def write_report(plan: Plan, target: Path, *, fmt: str = "csv", ascii_only: bool = False) -> Path:
+def write_report(
+    plan: Plan,
+    target: Path,
+    *,
+    fmt: str = "csv",
+    ascii_only: bool = False,
+    sort_by: str = "dst",
+    notes: dict[str, str] | None = None,
+) -> Path:
     """把计划写到文件，格式支持 csv / md / txt。"""
     renderers = {
         "csv": to_csv,
@@ -187,7 +238,9 @@ def write_report(plan: Plan, target: Path, *, fmt: str = "csv", ascii_only: bool
         msg = f"不支持的报告格式: {fmt!r}（可选: {', '.join(sorted(renderers))}）"
         raise ValueError(msg)
     target.parent.mkdir(parents=True, exist_ok=True)
-    target.write_text(renderer(plan, ascii_only=ascii_only), encoding="utf-8")
+    target.write_text(
+        renderer(plan, ascii_only=ascii_only, sort_by=sort_by, notes=notes), encoding="utf-8"
+    )
     return target
 
 

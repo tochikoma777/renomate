@@ -53,7 +53,8 @@ def test_build_rows_and_headers(tmp_path: Path, cfg: Config) -> None:
     assert len(rows[0].as_tuple()) == len(HEADERS)
 
 
-def test_rows_are_sorted_by_src(tmp_path: Path, cfg: Config) -> None:
+def test_rows_are_sorted_by_dst_by_default(tmp_path: Path, cfg: Config) -> None:
+    """默认按目标名排序（方便一眼看出是否整齐，SPEC 21.2）。"""
     for index, name in enumerate(["b.mp3", "a.mp3"]):
         tag_mp3(tmp_path / name, title=f"t{index}", artist="a")
     plan = build_plan(
@@ -65,7 +66,27 @@ def test_rows_are_sorted_by_src(tmp_path: Path, cfg: Config) -> None:
         allow_missing_fields=True,
     ).plan
     rows = build_rows(plan)
-    assert [row.src for row in rows] == sorted(row.src for row in rows)
+    assert [row.dst for row in rows] == sorted(row.dst for row in rows)
+    by_src = build_rows(plan, sort_by="src")
+    assert [row.src for row in by_src] == sorted(row.src for row in by_src)
+
+
+def test_notes_are_shown_in_report(tmp_path: Path, cfg: Config) -> None:
+    """被工具改动的地方必须显式列出（SPEC 21.3）。"""
+    tag_mp3(tmp_path / "a.mp3", title="A/B", artist="周杰伦")
+    result = build_plan(
+        new_session_id(),
+        tmp_path,
+        [FileCandidate(path=tmp_path / "a.mp3")],
+        cfg,
+        template="{title} - {artist}",
+        allow_missing_fields=True,
+    )
+    notes = result.notes()
+    assert any("字符替换" in value for value in notes.values())
+    rows = build_rows(result.plan, notes=notes)
+    assert any("字符替换" in row.notes for row in rows)
+    assert "改动" in HEADERS
 
 
 def test_max_display_limits_rows(tmp_path: Path, cfg: Config) -> None:

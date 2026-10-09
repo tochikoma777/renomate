@@ -167,6 +167,7 @@ def _scan_options(args: argparse.Namespace, cfg: Config, profile_name: str) -> S
 
 
 def _make_plan(args: argparse.Namespace, cfg: Config, directory: Path) -> PlanResult:
+    directory = directory.expanduser().resolve()
     profile_name = getattr(args, "profile", None) or cfg.general.default_profile
     try:
         profile = get_profile(profile_name, cfg)
@@ -206,14 +207,20 @@ def _counts_text(plan: Plan) -> str:
     )
 
 
-def _print_plan(plan: Plan, *, fmt: str = "table") -> None:
+def _print_plan(
+    plan: Plan,
+    *,
+    fmt: str = "table",
+    sort_by: str = "dst",
+    notes: dict[str, str] | None = None,
+) -> None:
     if fmt == "csv":
-        print(to_csv(plan))
+        print(to_csv(plan, sort_by=sort_by, notes=notes))
         return
     if fmt == "markdown":
-        print(to_markdown(plan))
+        print(to_markdown(plan, sort_by=sort_by, notes=notes))
         return
-    print(to_text(plan))
+    print(to_text(plan, sort_by=sort_by, notes=notes))
 
 
 def _cmd_scan(args: argparse.Namespace, cfg: Config, out: Any) -> int:
@@ -228,7 +235,7 @@ def _cmd_scan(args: argparse.Namespace, cfg: Config, out: Any) -> int:
             out(f"已写出计划：{args.out}")
     if not args.quiet:
         out(_counts_text(result.plan))
-        _print_plan(result.plan)
+        _print_plan(result.plan, sort_by=cfg.ui.sort_by, notes=result.notes())
     return EXIT_OK
 
 
@@ -238,11 +245,11 @@ def _cmd_preview(args: argparse.Namespace, cfg: Config, out: Any) -> int:
         print(json.dumps(result.plan.to_dict(), ensure_ascii=False, indent=2))
         return EXIT_OK
     if args.out:
-        write_report(result.plan, args.out, fmt="csv")
+        write_report(result.plan, args.out, fmt="csv", notes=result.notes())
     if not args.quiet:
         out(f"模板：{result.plan.template}")
         out(_counts_text(result.plan))
-        _print_plan(result.plan)
+        _print_plan(result.plan, sort_by=cfg.ui.sort_by, notes=result.notes())
         for item in conflicts(result.plan):
             out(f"冲突未消解：{item.src.name} → {item.dst.name}（{item.reason}）")
     return EXIT_OK
@@ -272,7 +279,7 @@ def _cmd_apply(args: argparse.Namespace, cfg: Config, out: Any) -> int:
         if not args.quiet:
             out("dry-run：只输出计划，不做任何改动（加 --yes 才真正执行）")
             out(_counts_text(plan))
-            _print_plan(plan)
+            _print_plan(plan, sort_by=cfg.ui.sort_by)
         return EXIT_OK
 
     if cfg.safety.require_confirm:
