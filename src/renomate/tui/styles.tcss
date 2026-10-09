@@ -1,0 +1,107 @@
+/* renomate TUI 样式（SPEC 12.2 颜色语义）
+   - 绿色：安全/已就绪
+   - 黄色：低置信度（confidence < 0.6）
+   - 红色：缺失/被拦截/冲突
+   - 灰色：跳过
+*/
+
+Screen {
+    layout: vertical;
+}
+
+#header {
+    height: 1;
+    background: $panel;
+    color: $text;
+    padding: 0 1;
+}
+
+#toolbar {
+    height: 3;
+    layout: horizontal;
+    padding: 0 1;
+}
+
+#toolbar Button {
+    margin-right: 1;
+}
+
+#table {
+    height: 1fr;
+    border: round $accent;
+}
+
+#footer {
+    height: 3;
+    layout: horizontal;
+    padding: 0 1;
+}
+
+#issues {
+    height: auto;
+    max-height: 8;
+    border: round $warning;
+    padding: 0 1;
+    display: none;
+}
+
+#issues.visible {
+    display: block;
+}
+
+.ready {
+    color: $success;
+}
+
+.skipped {
+    color: $text-muted;
+}
+
+.blocked {
+    color: $error;
+}
+
+.conflict {
+    color: $warning;
+}
+
+.low-confidence {
+    color: $warning;
+}
+
+.missing {
+    color: $error;
+}
+
+ConfirmScreen {
+    align: center middle;
+}
+
+#confirm-dialog {
+    width: 70%;
+    height: auto;
+    border: round $warning;
+    padding: 1 2;
+}
+
+#confirm-buttons {
+    layout: horizontal;
+    height: auto;
+    align-horizontal: center;
+    padding-top: 1;
+}
+
+#confirm-buttons Button {
+    margin-right: 1;
+}
+
+UndoScreen {
+    align: center middle;
+}
+
+#undo-dialog {
+    width: 80%;
+    height: 80%;
+    border: round $accent;
+    padding: 1 2;
+}
