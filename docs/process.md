@@ -66,10 +66,11 @@
 
 ## 4. 发布状态（已完成）
 
-- [x] **已发布**：`gh repo create renomate --public --source=. --remote=origin --push` 成功。
+- [x] **已发布（GitHub）**：`gh repo create renomate --public --source=. --remote=origin --push` 成功。
   - 仓库地址：<https://github.com/tochikoma777/renomate>
-  - 14 个 Conventional Commits 全部上库，远端 `main` 与本地一致。
+  - 14 个 Conventional Commits 全部上库，远端 `main` 与本地一致（截至 0.1.0 共 16 提交）。
   - 过程插曲：初次因沙箱 git(GnuTLS) 到 github.com 的 HTTPS 连接被掐断失败多次；用户切换网络后一次成功。本机无 SSH 密钥，故全程走 HTTPS。
+  - **未上架 PyPI**：当前用户只能从 GitHub 源码安装；README 安装章节已据此改写为「从源码安装」。若日后发布 PyPI，再补充 `pip install renomate`。
 - [ ] （可选）是否打初始发布标签 `v0.1.0`（用户未要求）。
   - 注：`docs/DECISIONS.md` 曾作为可选建议提出，但 6 条偏离决策已完整记录在本文第 3 节，**不单独建文件**，避免与现有 md 重复。
 

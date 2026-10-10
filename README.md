@@ -41,24 +41,49 @@
 
 ## 3. 安装
 
-```bash
-# 直接用（含 mutagen 音频标签支持）
-pip install "renomate[audio]"
+> **尚未发布到 PyPI**：当前请从 GitHub 源码安装（见下方）。将来上架后，才能直接用
+> `pip install "renomate[audio]"`。
 
-# 开发（conda + pip）
+### 从源码安装（推荐）
+
+```bash
+git clone https://github.com/tochikoma777/renomate.git
+cd renomate
+
+# 方式 A：用 conda（Python 3.11+）
 conda create -n renomate python=3.12 -y
 conda activate renomate
-pip install -e ".[dev,audio]"
+pip install -e ".[audio]"          # 含 mutagen 音频标签读取；不要 [audio] 也能跑（仅文件名推断）
+
+# 方式 B：用系统/已有的 Python 3.11+（虚拟环境）
+python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
+pip install -e ".[audio]"
 ```
 
-也提供 conda 复现文件：
+装完验证：
+
+```bash
+renomate --version     # 应输出版本号，如 renomate 0.1.0
+renomate --help        # 应列出所有子命令
+```
+
+### 开发 / 跑测试
+
+```bash
+pip install -e ".[dev,audio]"
+pytest -q
+```
+
+### conda 一键复现
+
+仓库也提供 `environment.yml`：
 
 ```bash
 conda env create -f environment.yml && conda activate renomate
 ```
 
 > `mutagen` 是**可选依赖**且运行时动态 import：没装也能跑，只是读不出内嵌标签
-> （自动降级为文件名/目录推断）。
+> （自动降级为文件名/目录推断）。音乐库场景建议带 `[audio]`。
 
 ## 4. 30 秒上手
 
@@ -73,6 +98,12 @@ TUI：
 
 ```bash
 renomate tui
+```
+
+不想用预设模板，可换成自定义模板（语法见第 5 节）：
+
+```bash
+renomate preview ~/Music --template "{track|pad:2}. {title} - {artist}"
 ```
 
 ## 5. 模板语法速查
