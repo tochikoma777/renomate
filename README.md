@@ -229,6 +229,7 @@ providers = ["pdftag", "filename", "default"]
 
 ## 12. Roadmap
 
+- [ ] **发布到 PyPI**（用户暂无 PyPI 账号，暂缓；当前仅支持 GitHub 源码安装，见第 3 节）
 - [ ] PDF / 照片 / 视频 Profile（架构已预留，见第 9 节）
 - [ ] undo 支持跨目录移动（当前仅同目录重命名）
 - [ ] 重名智能合并策略（保留更高音质版本）
