@@ -70,8 +70,8 @@
   - 仓库地址：<https://github.com/tochikoma777/renomate>
   - 14 个 Conventional Commits 全部上库，远端 `main` 与本地一致。
   - 过程插曲：初次因沙箱 git(GnuTLS) 到 github.com 的 HTTPS 连接被掐断失败多次；用户切换网络后一次成功。本机无 SSH 密钥，故全程走 HTTPS。
-- [ ] （可选）是否把第 3 节决策抽成正式 `docs/DECISIONS.md`（ADR 风格）。本次按用户指示改放 `docs/process.md`，未单独建 DECISIONS.md。
 - [ ] （可选）是否打初始发布标签 `v0.1.0`（用户未要求）。
+  - 注：`docs/DECISIONS.md` 曾作为可选建议提出，但 6 条偏离决策已完整记录在本文第 3 节，**不单独建文件**，避免与现有 md 重复。
 
 ## 5. 如何本地复跑
 
