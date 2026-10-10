@@ -64,14 +64,14 @@
    - 决定：默认 dry-run；真正执行必须 `--yes --token APPLY`；进入计划前先 `directory.expanduser().resolve()`。
    - 影响：安全 + 路径推断正确。
 
-## 4. 待办 / 阻塞
+## 4. 发布状态（已完成）
 
-- [ ] **push 待确认**：尚未配置 remote、未推送。备选方案见下。
-  - 方案 A：`gh repo create renomate --public --source=. --remote=origin --push`（需先 `gh auth login`）。
-  - 方案 B：网页建空仓库，我加 `git remote add origin …` 后再等你点头 push。
-  - 方案 C：暂不推送，保留本地提交。
-  - 注意：`renomate` 若被占用，备选 `renomate-cli` / `tidyname` / `renamex`。
+- [x] **已发布**：`gh repo create renomate --public --source=. --remote=origin --push` 成功。
+  - 仓库地址：<https://github.com/tochikoma777/renomate>
+  - 14 个 Conventional Commits 全部上库，远端 `main` 与本地一致。
+  - 过程插曲：初次因沙箱 git(GnuTLS) 到 github.com 的 HTTPS 连接被掐断失败多次；用户切换网络后一次成功。本机无 SSH 密钥，故全程走 HTTPS。
 - [ ] （可选）是否把第 3 节决策抽成正式 `docs/DECISIONS.md`（ADR 风格）。本次按用户指示改放 `docs/process.md`，未单独建 DECISIONS.md。
+- [ ] （可选）是否打初始发布标签 `v0.1.0`（用户未要求）。
 
 ## 5. 如何本地复跑
 
