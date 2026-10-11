@@ -6,10 +6,10 @@ import json
 from pathlib import Path
 
 import pytest
-from tests.conftest import tag_mp3
 
 from renomate import cli
 from renomate.cli import EXIT_ALL_FAILED, EXIT_OK, EXIT_PARTIAL, EXIT_USAGE, build_parser, main
+from tests.conftest import tag_mp3
 
 
 def run(*argv: str) -> int:

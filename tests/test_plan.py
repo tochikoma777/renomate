@@ -6,8 +6,6 @@ import sys
 from pathlib import Path
 
 import pytest
-from tests.conftest import tag_mp3
-from tests.test_musicbrainz import FakeMusicBrainz
 
 from renomate.config import Config, default_config
 from renomate.models import ItemStatus
@@ -23,6 +21,8 @@ from renomate.plan import (
 )
 from renomate.platform.fs import FileSystem, LocalFileSystem
 from renomate.scanner import FileCandidate, ScanOptions, scan
+from tests.conftest import tag_mp3
+from tests.test_musicbrainz import FakeMusicBrainz
 
 TEMPLATE = "{title} - {artist} - {album} - {country}"
 

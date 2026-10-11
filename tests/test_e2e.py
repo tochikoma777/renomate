@@ -9,7 +9,6 @@ import os
 from pathlib import Path
 
 import pytest
-from tests.conftest import tag_mp3
 
 from renomate.config import Config, default_config
 from renomate.executor import apply_plan
@@ -18,6 +17,7 @@ from renomate.models import ItemStatus
 from renomate.plan import build_plan, new_session_id
 from renomate.safety import BlockedPathError
 from renomate.scanner import FileCandidate, ScanOptions, scan
+from tests.conftest import tag_mp3
 
 TEMPLATE = "{title} - {artist}"
 

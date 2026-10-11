@@ -5,7 +5,6 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-from tests.conftest import tag_mp3
 from textual.app import App, ComposeResult
 from textual.widgets import Button, Input, Label, OptionList, Static
 
@@ -18,6 +17,7 @@ from renomate.scanner import FileCandidate
 from renomate.tui.app import RenomateApp
 from renomate.tui.screens import ConfirmScreen, UndoScreen
 from renomate.tui.widgets import DetailLine, IssuePanel, PlanTable, SummaryBar
+from tests.conftest import tag_mp3
 
 
 @pytest.fixture

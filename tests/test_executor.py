@@ -5,7 +5,6 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-from tests.conftest import tag_mp3
 
 from renomate.config import Config, default_config
 from renomate.executor import (
@@ -24,6 +23,7 @@ from renomate.models import ItemStatus, Plan, RenameItem
 from renomate.plan import build_plan, new_session_id
 from renomate.platform.fs import FileSystem, LocalFileSystem
 from renomate.safety import RENOMATE_CASE_PREFIX, RENOMATE_TMP_PREFIX
+from tests.conftest import tag_mp3
 
 
 class FailingRenameFS(LocalFileSystem):

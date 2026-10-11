@@ -5,7 +5,6 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-from tests.conftest import tag_mp3
 
 from renomate.config import Config
 from renomate.journal import SessionSummary
@@ -29,6 +28,7 @@ from renomate.report import (
     write_report,
 )
 from renomate.scanner import FileCandidate
+from tests.conftest import tag_mp3
 
 
 def _plan(tmp_path: Path, cfg: Config) -> object:

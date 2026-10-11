@@ -6,8 +6,6 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
-from tests.conftest import tag_mp3
-
 from renomate.config import Config, journal_dir
 from renomate.executor import StepResult, apply_plan
 from renomate.journal import (
@@ -25,6 +23,7 @@ from renomate.journal import (
 from renomate.plan import build_plan, new_session_id
 from renomate.platform.fs import LocalFileSystem
 from renomate.scanner import FileCandidate
+from tests.conftest import tag_mp3
 
 TEMPLATE = "{title} - {artist}"
 

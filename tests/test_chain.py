@@ -7,12 +7,12 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-from tests.test_musicbrainz import FakeMusicBrainz
 
 from renomate.chain import ProviderChain, make_bundle, merge_field
 from renomate.config import Config, default_config
 from renomate.models import FieldSource, FieldValue, MetadataBundle
 from renomate.providers import PROVIDER_REGISTRY, register_provider, unregister_provider
+from tests.test_musicbrainz import FakeMusicBrainz
 
 
 class DummyProvider:
