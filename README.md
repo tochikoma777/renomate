@@ -41,10 +41,15 @@
 
 ## 3. 安装
 
-> **尚未发布到 PyPI**：当前请从 GitHub 源码安装（见下方）。将来上架后，才能直接用
-> `pip install "renomate[audio]"`。
+> **推荐从 PyPI 安装**；想追最新源码或参与开发可从 GitHub 安装（见下方）。
 
-### 从源码安装（推荐）
+### 从 PyPI 安装（推荐）
+
+```bash
+pip install "renomate[audio]"     # 含 mutagen 音频标签读取；不要 [audio] 也能跑（仅文件名推断）
+```
+
+### 从源码安装（开发 / 追最新）
 
 ```bash
 git clone https://github.com/tochikoma777/renomate.git
@@ -229,7 +234,7 @@ providers = ["pdftag", "filename", "default"]
 
 ## 12. Roadmap
 
-- [ ] **发布到 PyPI**（用户暂无 PyPI 账号，暂缓；当前仅支持 GitHub 源码安装，见第 3 节）
+- [x] **已发布到 PyPI**：`pip install "renomate[audio]"` 即可（见第 3 节）。TestPyPI 同步有预发布验证版。
 - [ ] PDF / 照片 / 视频 Profile（架构已预留，见第 9 节）
 - [ ] undo 支持跨目录移动（当前仅同目录重命名）
 - [ ] 重名智能合并策略（保留更高音质版本）

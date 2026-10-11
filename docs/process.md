@@ -68,12 +68,12 @@
 
 - [x] **已发布（GitHub）**：`gh repo create renomate --public --source=. --remote=origin --push` 成功。
   - 仓库地址：<https://github.com/tochikoma777/renomate>
-  - 14 个 Conventional Commits 全部上库，远端 `main` 与本地一致（截至 0.1.0 共 16 提交）。
   - 过程插曲：初次因沙箱 git(GnuTLS) 到 github.com 的 HTTPS 连接被掐断失败多次；用户切换网络后一次成功。本机无 SSH 密钥，故全程走 HTTPS。
-  - **未上架 PyPI（后续工作）**：当前用户只能从 GitHub 源码安装；README 安装章节已据此改写为「从源码安装」。
-    - 暂缓原因：用户暂无 PyPI 账号。后续若要发布，需先注册账号并配置 token，再走 `twine upload`（可接 CI 或手动）。
-- [ ] （可选）是否打初始发布标签 `v0.1.0`（用户未要求）。
-  - 注：`docs/DECISIONS.md` 曾作为可选建议提出，但 6 条偏离决策已完整记录在本文第 3 节，**不单独建文件**，避免与现有 md 重复。
+- [x] **已上架 PyPI（v0.1.0）**：采用 **Trusted Publisher（OIDC，零密钥）** 方式发布，CI 在 GitHub Release 发布时自动上传到 pypi.org；另设 `release-test` 环境 + `workflow_dispatch` 可先发到 TestPyPI 验证链路。
+  - 安装：`pip install "renomate[audio]"`；验证版同步于 TestPyPI（<https://test.pypi.org/project/renomate/>）。
+  - README 安装章节已更新为「PyPI 安装（推荐）+ 源码安装（开发）」。
+  - CI 测试矩阵当前仅 `ubuntu-latest`（py3.11/3.12）：部分测试含 Unix 假设（拦截 `/etc`、大小写敏感判定、路径分隔符），Windows 暂未在 CI 验证；安装仍兼容 Windows，后续可补测。
+- [x] 初始发布标签 `v0.1.0`：随首次 PyPI 发布打 tag 并创建 GitHub Release 触发。
 
 ## 5. 如何本地复跑
 
