@@ -60,7 +60,7 @@ def _snapshot(root: Path) -> dict[str, bytes]:
 
 def test_end_to_end_apply_and_undo_restores_byte_identical(tmp_path: Path, cfg: Config) -> None:
     """apply 后 undo，文件名必须与操作前逐字节一致（SPEC 21.4）。"""
-    if os.geteuid() == 0:  # root 下「只读」不生效，跳过只读断言
+    if getattr(os, "geteuid", lambda: -1)() == 0:  # root 下「只读」不生效，跳过只读断言
         pytest.skip("root 用户下只读位不生效")
     root = _fixture_lib(tmp_path / "Music")
     cfg.safety.allow_missing_fields = True
@@ -87,7 +87,7 @@ def test_end_to_end_apply_and_undo_restores_byte_identical(tmp_path: Path, cfg: 
 
 def test_end_to_end_keeps_dangerous_files_untouched(tmp_path: Path, cfg: Config) -> None:
     """只读 / 坏文件 / 非白名单文件不会被误改。"""
-    if os.geteuid() == 0:
+    if getattr(os, "geteuid", lambda: -1)() == 0:
         pytest.skip("root 用户下只读位不生效")
     root = _fixture_lib(tmp_path / "Music")
     options = ScanOptions(extensions=list(cfg.profile("audio").extensions))
@@ -150,7 +150,12 @@ def test_end_to_end_no_net_works(tmp_path: Path) -> None:
 
 
 def test_scan_on_windows_system_dir_is_blocked_with_reason() -> None:
-    """对 `/mnt/c/Windows` 执行 scan 必须被拦截，并给出清晰原因（SPEC 19.1）。"""
+    """对 `/mnt/c/Windows` 执行 scan 必须被拦截，并给出清晰原因（SPEC 19.1）。
+
+    该用例仅在使用 WSL 且能访问 /mnt/c 的环境有意义；其余环境跳过。
+    """
+    if not Path("/mnt/c").exists():
+        pytest.skip("WSL-only test: /mnt/c not available")
     with pytest.raises(BlockedPathError) as exc:
         scan(Path("/mnt/c/WINDOWS"))
     assert "黑名单" in exc.value.reason

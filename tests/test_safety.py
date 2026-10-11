@@ -210,7 +210,7 @@ def test_classify_read_only_file(tmp_path: Path) -> None:
         reason = classify_file(target, allowed_extensions=["mp3"])
     finally:
         target.chmod(0o644)
-    if os.geteuid() != 0:
+    if getattr(os, "geteuid", lambda: -1)() != 0:
         assert reason is not None and "not_writable" in reason
 
 
